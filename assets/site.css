@@ -12,7 +12,7 @@
   --edge: clamp(1rem, 4.6vw, 4.5rem);
   --wide: 75rem;
   --gutter: clamp(16px, 1.8vw, 24px);
-  color-scheme: light;
+  color-scheme: light dark;   /* a real dark theme below, so browsers don't darken the light one themselves */
 
   /* The header, and the opening that builds it (site.js measures the real numbers) */
   --hh: 56px;                 /* header height */
@@ -492,4 +492,43 @@ h3 { font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem); font-style: italic; line
   #contact .section-grid { grid-template-columns: minmax(0, 9rem) minmax(0, 1fr); column-gap: 1.5rem; }   /* a side head, as on wide screens */
   #contact .body { gap: 0.75rem; }
   .address { font-size: 1.75rem; }
+}
+
+/* ---------- Dark ----------
+   One background everywhere (#222429): the page, the header, the footer and the card.
+   The token names are the light theme's, and each keeps its role: cream is the page, ink the text and the keys,
+   stone the secondary text and the callout lines, mist the hairlines (the 「Inc.」 line, the header's line, the ticks),
+   black the waterlines. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cream: #222429;
+    --ink: #E9E1D4;     /* 11.97:1 on the page */
+    --stone: #ADA69C;   /* 6.44:1 */
+    --mist: #767371;    /* 3.30:1: the text at 0.42, so the 「Inc.」 letters hand over to their line without a step */
+    --black: #F2E9DB;   /* 12.91:1 */
+  }
+  /* The mark: the arcs keep their order against the page (faint, middle, strong); the hole stays darker than the page */
+  :is(.mark, .hmark) [fill="#A8A8A8"] { fill: var(--mist); stroke: var(--mist); }
+  :is(.mark, .hmark) [fill="#504B47"] { fill: var(--stone); stroke: var(--stone); }
+  :is(.mark, .hmark) path[fill="#000000"] { fill: var(--black); stroke: var(--black); }
+  /* The wordmark in the text's colour, with nothing behind it: its PNG masks the text colour,
+     and the image itself is moved out of its own box, so only the masked colour paints */
+  .hword {
+    background-color: currentColor;
+    -webkit-mask: url(wordmark.png) 0 0 / 100% 100% no-repeat;
+    mask: url(wordmark.png) 0 0 / 100% 100% no-repeat;
+    object-position: -9999px 0;
+  }
+}
+
+/* Forced colours: the system recolours backgrounds, so the masked wordmark keeps its own,
+   in the visitor's link colour; the glyph-only image is the mask, and the edged image moves out of its box as in dark */
+@media (forced-colors: active) {
+  .hword {
+    forced-color-adjust: none;
+    background-color: LinkText;
+    -webkit-mask: url(wordmark.png) 0 0 / 100% 100% no-repeat;
+    mask: url(wordmark.png) 0 0 / 100% 100% no-repeat;
+    object-position: -9999px 0;
+  }
 }
