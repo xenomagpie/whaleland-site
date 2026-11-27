@@ -57,9 +57,10 @@
 
 // The opening. With motion welcome, the first screen is the opening alone, and the header gathers itself from it:
 // 「Inc.」 greys and becomes the header's line, 「Whaleland」 becomes the wordmark, the facts give way to the nav, and the
-// whale falls: the mark's arcs sink into their own shadow while the same arcs rise out of a shadow beside the wordmark.
-// At the end the same portal runs the other way. This script measures where those meetings happen and hands the numbers
-// to the stylesheet. Where CSS scroll timelines or timeline-scope are missing, it also drives every animation itself.
+// whale falls: the mark's arcs sink into their own shadow while the same arcs rise out of a shadow beside the wordmark;
+// then the emptied shadow closes onto its line. At the end the same portal runs the other way. This script measures
+// where those meetings happen and hands the numbers to the stylesheet. Where CSS scroll timelines or timeline-scope are
+// missing, it also drives every animation itself.
 (function () {
   var root = document.documentElement;
   var motion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: no-preference)') : null;
@@ -103,12 +104,15 @@
 
     // 3. The fall starts within the first wheel step. The arcs sink 394 of the mark's 594 units, a little faster than the page
     //    rises, so they visibly go down into the shadow. It never starts before the whole source mark, shadow included, is
-    //    in view, and it ends while the waterline still is.
+    //    in view. Right after it, with the arcs all below the line, the shadow closes onto the line from both ends: its ends
+    //    move in as fast as the arcs went down (263 units to their 394). Both end while the waterline is still at least 24 px
+    //    below the header, so the shadow closes in full view; where a short or zoomed-in window leaves less room, both
+    //    shorten in step, however quick that makes them.
     var V = root.clientHeight, m = box(mark), sink = 394 * m.w / 594, wl = m.y + m.h, eh = 12.843 * m.w / 594;
     var f0 = Math.max(8, i1 - 20, wl + eh - V + 8);
-    var f1 = f0 + Math.max(150, Math.min(340, sink / 1.4));
-    f1 = Math.max(f0 + 110, Math.min(f1, wl - hh - 24));
-    px('--fold0', f0); px('--fold1', f1);
+    var fall = Math.max(150, Math.min(340, sink / 1.4)), shut = fall * 263 / 394;
+    var fit = Math.min(1, Math.max(1, wl - hh - 24 - f0) / (fall + shut));
+    px('--fold0', f0); px('--fold1', f0 + fall * fit); px('--fold2', f0 + (fall + shut) * fit);
     // 5. The closing rise ends at 78 % of the footer's entry; it starts early enough to take at least 112 px of scroll,
     //    so the arcs may first come up from below the window's edge, and the footer needs no empty band to make room.
     var foot = q('.foot'), em = q('.end-mark');
